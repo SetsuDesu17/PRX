@@ -44,10 +44,22 @@ const user = {
 
     user: async () => {
         return new Promise ((resolve, reject) => {
-            const { id, username, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn} = userData;
             db.query(
-                'SELECT * FROM users WHERE userIsLoggedIn = ?',
+                'SELECT username, userStatus, userClass, userSection, userYearLevel FROM users WHERE userIsLoggedIn = ?',
                 ['TRUE'],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            );
+        }); 
+    },
+
+    getUserById: async (id) => {
+        return new Promise ((resolve, reject) => {
+            db.query(
+                'SELECT username, userStatus, userClass, userSection, userYearLevel FROM users WHERE id = ?',
+                [id],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -60,7 +72,7 @@ const user = {
         return new Promise ((resolve, reject) => {
             db.query(
                 'UPDATE users SET username = ? WHERE id = ?',
-                [id, username],
+                [username, id],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -73,7 +85,20 @@ const user = {
         return new Promise ((resolve, reject) => {
             db.query(
                 'UPDATE users SET password = ? WHERE id = ?',
-                [id, password],
+                [password, id],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
+    changePrivilege: async (id, userPrivilege) => {
+        return new Promise ((resolve, reject) => {
+            db.query(
+                'UPDATE users SET userPrivilege = ? WHERE id = ?',
+                [userPrivilege, id],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -97,9 +122,69 @@ const user = {
 
     addActivity: async (activity) => {
         return new Promise ((resolve, reject) => {
+            const {activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription} = activity;
             db.query(
-                'INSERT INTO'
+                'INSERT INTO activities (activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription) VALUES (? ? ? ? ? ? ? ?)',
+                [activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
+    updateActivity: async (id, activity) => {
+        return new Promise ((resolve, reject) => {
+            const {activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription} = activity;
+            db.query(
+                'UPDATE activities SET activityName = ?, activityType = ?, activitySubject = ?, activityDeadline = ?, activityCreated = ?, activityCreator = ?, activityStatus = ?, activityDescription = ? WHERE id = ?',
+                [activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription, id],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
+    deleteActivity: async (id) => {
+        return new Promise ((resolve, reject) => {
+            db.query(
+                'DELETE FROM activities WHERE id = ?',
+                [id],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
+    getRequestsByStatus: async (status) => {
+        return new Promise ((resolve, reject) => {
+            db.query(
+                'SELECT * FROM requests WHERE activityStatus = ?',
+                [status],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
+    updateRequestStatus: async (id, status) => {
+        return new Promise ((resolve, reject) => {
+            db.query(
+                'UPDATE requests SET activityStatus = ? WHERE id = ?',
+                [status, id],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
             )
         });
     }
+
 }
