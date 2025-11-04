@@ -1,7 +1,13 @@
 Please do the following before running the code:
-- make sure to download all node modules 
+- make sure to download all node modules
+{
+  1. npm init -y
+  2. npm install express mysql2 cors
+  3. npm install --save-dev nodemon
+}
 - run xampp 
 - copy and paste the mysql database
+- add a .gitignore file and type: (/Project/node_modules)
 
 Please do the following when pushing a git branch
 - git pull
