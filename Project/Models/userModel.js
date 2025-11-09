@@ -1,4 +1,4 @@
-const db = require('../database');
+const db = require('../database.js');
 
 const user = {
     signIn: async (userData) => {
@@ -8,6 +8,7 @@ const user = {
                 'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 [username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, 'FALSE'],
                 (err, results) => {
+                    if (err) reject(err);
                     resolve({ id: results.insertId, ...userData});
                 }
             );
@@ -68,8 +69,9 @@ const user = {
         }); 
     },
 
-    changeUsername: async (id, username) => {
+    changeUsername: async (id, value) => {
         return new Promise ((resolve, reject) => {
+            const {username} = value;
             db.query(
                 'UPDATE users SET username = ? WHERE id = ?',
                 [username, id],
@@ -81,8 +83,9 @@ const user = {
         });
     },
 
-    changePassword: async (id, password) => {
+    changePassword: async (id, value) => {
         return new Promise ((resolve, reject) => {
+            const {password} = value;
             db.query(
                 'UPDATE users SET password = ? WHERE id = ?',
                 [password, id],
@@ -174,8 +177,9 @@ const user = {
         });
     },
 
-    updateRequestStatus: async (id, status) => {
+    updateRequestStatus: async (id, value) => {
         return new Promise ((resolve, reject) => {
+            const {status} = value;
             db.query(
                 'UPDATE requests SET activityStatus = ? WHERE id = ?',
                 [status, id],
@@ -188,3 +192,5 @@ const user = {
     }
 
 }
+
+module.exports = user;
