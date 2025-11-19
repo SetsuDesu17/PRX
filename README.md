@@ -6,6 +6,8 @@ ITECC - 05 Group Project
 Ready for Testing:
 - userModel
 - requestModel
+- requestController
+- activitiesController
 
 Ongoing:
 
