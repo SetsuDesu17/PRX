@@ -1,20 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const requestsController = require('../Controllers/requestsController');
+import { Router } from 'express';
+const router = Router();
+import requestsController from '../controllers/requestsController.js';
 
-// GET /api/requests - Get requests
-router.get('/api/requests', requestsController.getRequests);
+// GET / - Get requests
+router.get('/', requestsController.getAllRequests);
 
-// GET /api/requests/status/:status - Get requests by status
-router.get('api/requests/status/:status', requestsController.getRequestsByStatus);
+// GET /status/:status - Get requests by status
+router.get('/status/:status', requestsController.getRequestsByStatus);
 
-// GET /api/requests/id/:id - Get requests by ID
-router.get('api/requests/id/:id', requestsController.getRequestsByID);
+// GET /id/:id - Get requests by ID
+router.get('/id/:id', requestsController.getRequestsById);
 
-// GET /api/requests/date_publish/:date/:olderOrLater - Get requests by date published
-router.get('/api/requests/date_publish/:date/:olderOrLater', requestsController.getRequestsByDatePublished);
+// GET /date_publish/:date/:olderOrLater - Get requests by date published
+router.get('/date_publish/:date/', requestsController.getRequestsByDate);
 
-// POST /api/requests/create - Create a request
-router.post('/api/requests/create', requestsController.createRequest);
+// POST /create - Create a request
+router.post('/create', requestsController.createRequest);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const User = require('../models/userModel');
-const Activities = require('../models/activitiesModel');
-const Request = require('../models/requestsModel');
+import User from '../models/userModel.js';
+import Activities from '../models/activitiesModel.js';
+import Request from '../models/requestsModel.js';
 
 const userController = {
     //Signin = Username, Password
@@ -36,11 +36,22 @@ const userController = {
   },
 
   //Login = Username, Password (need fixing)
-  getLogin: async (req, res) => {
+  logIn: async (req, res) => {
     try {
-      const username = await User.getlogin(req.params.username);
-      const password = await User.getlogin(req.params.password);
-      res.json({ success: true, data: requests });
+      const username = req.params.username;
+      const password = req.params.password;
+      await User.updateOnlineStatus(username, password);
+      const user = await User.logIn(username, password);
+      res.json({ success: true, data: user });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error Logging-in', error: error.message });
+    }
+  },
+
+  getCurrentUser: async (req, res) => {
+    try {
+      const user = await User.getCurrentUser();
+      res.json({ success: true, data: user });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error Logging-in', error: error.message });
     }
@@ -51,7 +62,7 @@ const userController = {
     try {
       const user = await User.getUserById(req.params.id);
       if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-      res.json({ success: true, data: request });
+      res.json({ success: true, data: user });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error fetching User', error: error.message });
     }
@@ -382,4 +393,4 @@ const userController = {
   }
 }
 
-module.exports = userController;
+export default userController;

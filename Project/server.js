@@ -1,19 +1,21 @@
-const express = require('express');
-const cors = require('cors');
-const studentRoutes = require('./routes/studentRoute');
+import express, { json, urlencoded } from 'express';
+import cors from 'cors';
+import userRoutes from './routes/userRoutes.js';
+import activitiesRoutes from './routes/activitiesRoutes.js'
+import requestsRoutes from './routes/requestsRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/students', studentRoutes);
-
-
+app.use('/abs/users', userRoutes);
+app.use('/abs/activities', activitiesRoutes);
+app.use('/abs/requests', requestsRoutes);
 
 
 

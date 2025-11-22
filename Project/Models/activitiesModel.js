@@ -1,9 +1,9 @@
-const db = require('../database.js');
+import database from '../database.js';
 
 const activities = {
     getAllActivity: async () => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM activities",
                 (err, result) => {
                     if (err) reject(err);
@@ -14,7 +14,7 @@ const activities = {
     },
     getActivitiesByStatus: async (status) => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM activities WHERE activityStatus = ?",
                 [status],
                 (err, results) => {
@@ -26,8 +26,8 @@ const activities = {
     },
     getActivitiesByDeadline: async (date) => {
         return new Promise((resolve, reject) => {
-            db.query(
-                "SELECT * FROM activities WHERE activityDeadline = ?",
+            database.query(
+                "SELECT * FROM activities WHERE activityDeadline <= ?",
                 [date],
                 (err, results) => {
                     if (err) reject(err);
@@ -38,7 +38,7 @@ const activities = {
     },
     getActivitiesByType: async (type) => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM activities WHERE activityType = ?",
                 [type],
                 (err, results) => {
@@ -50,7 +50,7 @@ const activities = {
     },
     getActivitiesBySubject: async (subject) => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM activities WHERE activitySubject = ?",
                 [subject],
                 (err, results) => {
@@ -62,4 +62,4 @@ const activities = {
     }
 }
 
-module.exports = activities;
+export default activities;

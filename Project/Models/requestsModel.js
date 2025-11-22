@@ -1,9 +1,9 @@
-const db = require('../database.js');
+import database from '../database.js';
 
 const requests = {
-    getRequests: async () => {
+    getAllRequests: async () => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM requests",
                 (err, results) => {
                     if (err) reject(err);
@@ -15,7 +15,7 @@ const requests = {
 
     getRequestsByStatus: async (status) => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM requests WHERE requestStatus = ?",
                 [status],
                 (err, results) => {
@@ -28,7 +28,7 @@ const requests = {
 
     getRequestsById: async (id) => {
         return new Promise((resolve, reject) => {
-            db.query(
+            database.query(
                 "SELECT * FROM requests WHERE id = ?",
                 [id],
                 (err, results) => {
@@ -39,35 +39,23 @@ const requests = {
         });
     },
 
-    getRequestsByDatePublished: async (date, olderOrLater) => {
+    getRequestsByDate: async (date) => {
         return new Promise((resolve, reject) => {
-            if (olderOrLater == "<"){
-                db.query(
-                    "SELECT * FROM requests WHERE requestPublished <= ?",
-                    [date],
-                    (err, results) => {
-                        if (err) reject(err);
-                        resolve(results);
-                    }
-                );
-            } else {
-                db.query(
-                    "SELECT * FROM requests WHERE requestPublished >= ?",
-                    [date],
-                    (err, results) => {
-                        if (err) reject(err);
-                        resolve(results);
-                    }
-                );
-            }
-            
+            database.query(
+                "SELECT * FROM requests WHERE requestPublished <= ?",
+                [date],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )  
         });
     },
 
     createRequest: async (request) => {
         return new Promise ((resolve, reject) => {
             const {requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = request;
-            db.query(
+            database.query(
                 'INSERT INTO requests (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ],
                 (err, results) => {
@@ -80,4 +68,4 @@ const requests = {
 
 }
 
-module.exports = requests;
+export default requests;

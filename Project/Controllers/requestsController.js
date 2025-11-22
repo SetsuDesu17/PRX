@@ -1,9 +1,9 @@
-const Request = require('../models/requestsModel');
+import Request from '../models/requestsModel.js';
 
 const requestsController = {
   getAllRequests: async (req, res) => {
     try {
-      const requests = await Request.getRequests();
+      const requests = await Request.getAllRequests();
       res.json({ success: true, data: requests });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error fetching requests', error: error.message });
@@ -28,6 +28,16 @@ const requestsController = {
       res.status(500).json({ success: false, message: 'Error fetching requests by status', error: error.message });
     }
   },
+
+  getRequestsByDate: async (req, res) => {
+    try {
+      const requests = await Request.getRequestsByDate(req.params.status);
+      res.json({ success: true, data: requests });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error fetching requests by date', error: error.message });
+    }
+  },  
+
 
   createRequest: async (req, res) => {
     try {
@@ -59,4 +69,4 @@ const requestsController = {
   }
 };
 
-module.exports = requestsController;
+export default requestsController;
