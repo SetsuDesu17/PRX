@@ -1,4 +1,4 @@
-const Activity = require('../models/activitiesModel');
+import Activity from '../models/activitiesModel.js';
 
 const activitiesController = {
   getAllActivity: async (req, res) => {
@@ -20,9 +20,37 @@ const activitiesController = {
     }
   },
 
+  getActivitiesByDeadline: async (req, res) => {
+    try {
+      const activity = await Activity.getActivitiesByDeadline(req.params.id);
+      if (!activity) return res.status(404).json({ success: false, message: 'Activity not found' });
+      res.json({ success: true, data: activity });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error fetching activity', error: error.message });
+    }
+  },
+
   getActivitiesByStatus: async (req, res) => {
     try {
       const activities = await Activity.getActivitiesByStatus(req.params.status);
+      res.json({ success: true, data: activities });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error fetching activities by status', error: error.message });
+    }
+  },
+
+  getActivitiesBySubject: async (req, res) => {
+    try {
+      const activities = await Activity.getActivitiesBySubject(req.params.status);
+      res.json({ success: true, data: activities });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error fetching activities by status', error: error.message });
+    }
+  },
+
+  getActivitiesByType: async (req, res) => {
+    try {
+      const activities = await Activity.getActivitiesByType(req.params.status);
       res.json({ success: true, data: activities });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error fetching activities by status', error: error.message });
@@ -77,4 +105,4 @@ const activitiesController = {
   }
 };
 
-module.exports = activitiesController;
+export default activitiesController;

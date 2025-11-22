@@ -1,20 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const activitesController = require('../Controllers/activitesController');
+import { Router } from 'express';
+const router = Router();
+import activitiesController from '../controllers/activitiesController.js';
 
-// GET /api/activities - Get all activities
-router.get('/api/activities', activitesController.getAllActivity);
+// GET / - Get all activities
+router.get('/', activitiesController.getAllActivity);
 
-// GET /api/activities/status/:status - Get activities by status
-router.get('api/activities/status/:status', activitesController.getActivitiesByStatus);
+// GET //status/:status - Get activities by status
+router.get('/status/:status', activitiesController.getActivitiesByStatus);
 
-// GET /api/activities/date/:date - Get activites by deadline
-router.get('api/activities/date/:date', activitesController.getActivitiesByDeadline);
+// GET //date/:date - Get activites by deadline
+router.get('/date/:date', activitiesController.getActivitiesByDeadline);
 
-// GET /api/activities/type/:type - Get activities by type
-router.get('/api/activites/type/:type', activitesController.getActivitiesByType);
+// GET //type/:type - Get activities by type
+router.get('/type/:type', activitiesController.getActivitiesByType);
 
-// GET /api/activities/type/:subject - Get activities by subject
-router.get('/api/activites/type/:subject', activitesController.getActivitiesBySubject);
+// GET //type/:subject - Get activities by subject
+router.get('/type/:subject', activitiesController.getActivitiesBySubject);
 
-module.exports = router;
+export default router;

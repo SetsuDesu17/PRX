@@ -1,10 +1,10 @@
-const db = require('../database.js');
+import database from '../database.js';
 
 const user = {
     signIn: async (userData) => {
         return new Promise ((resolve, reject) => {
             const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn} = userData;
-            db.query(
+            database.query(
                 'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 [username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, 'FALSE'],
                 (err, results) => {
@@ -15,26 +15,11 @@ const user = {
         });
     },
 
-    logIn: async (userData) => {
+    updateOnlineStatus: async (username, password) => {
         return new Promise ((resolve, reject) => {
-            const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn} = userData;
-            db.query(
-                'SELECT * FROM users WHERE username = ? AND password = ?',
+            database.query(
+                'UPDATE users SET userIsLoggedIn = 1 WHERE username = ? AND password = ?',
                 [username, password],
-                (err, results) => {
-                    if (err) reject(err);
-                    resolve(console.log('Successfully Logged In! Welcome ?! \n ?', [username, results]), updateOnlineStatus(results));
-                }
-            );
-        });
-    },
-
-    updateOnlineStatus: async (userData) => {
-        return new Promise ((resolve, reject) => {
-            const { id, username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn} = userData;
-            db.query(
-                'UPDATE users SET userIsLoggedIn = \'TRUE\' WHERE id = ?',
-                [id],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -43,11 +28,23 @@ const user = {
         });
     },
 
-    user: async () => {
+    logIn: async (username, password) => {
         return new Promise ((resolve, reject) => {
-            db.query(
-                'SELECT username, userStatus, userClass, userSection, userYearLevel FROM users WHERE userIsLoggedIn = ?',
-                ['TRUE'],
+            database.query(
+                'SELECT * FROM users WHERE username = ? AND password = ?',
+                [username, password],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    },
+
+    getCurrentUser: async () => {
+        return new Promise ((resolve, reject) => {
+            database.query(
+                'SELECT username, userStatus, userClass, userSection, userYearLevel FROM users WHERE userIsLoggedIn IS TRUE',
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -58,7 +55,7 @@ const user = {
 
     getUserById: async (id) => {
         return new Promise ((resolve, reject) => {
-            db.query(
+            database.query(
                 'SELECT username, userStatus, userClass, userSection, userYearLevel FROM users WHERE id = ?',
                 [id],
                 (err, results) => {
@@ -72,7 +69,7 @@ const user = {
     changeUsername: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {username} = value;
-            db.query(
+            database.query(
                 'UPDATE users SET username = ? WHERE id = ?',
                 [username, id],
                 (err, results) => {
@@ -86,7 +83,7 @@ const user = {
     changePassword: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {password} = value;
-            db.query(
+            database.query(
                 'UPDATE users SET password = ? WHERE id = ?',
                 [password, id],
                 (err, results) => {
@@ -99,7 +96,7 @@ const user = {
 
     changePrivilege: async (id, userPrivilege) => {
         return new Promise ((resolve, reject) => {
-            db.query(
+            database.query(
                 'UPDATE users SET userPrivilege = ? WHERE id = ?',
                 [userPrivilege, id],
                 (err, results) => {
@@ -112,7 +109,7 @@ const user = {
 
     deleteAccount: async (id) => {
         return new Promise ((resolve, reject) => {
-            db.query(
+            database.query(
                 'DELETE FROM users WHERE id = ?',
                 [id],
                 (err, results) => {
@@ -126,7 +123,7 @@ const user = {
     addActivity: async (activity) => {
         return new Promise ((resolve, reject) => {
             const {activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription} = activity;
-            db.query(
+            database.query(
                 'INSERT INTO activities (activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription) VALUES (? ? ? ? ? ? ? ?)',
                 [activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription],
                 (err, results) => {
@@ -140,7 +137,7 @@ const user = {
     updateActivity: async (id, activity) => {
         return new Promise ((resolve, reject) => {
             const {activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription} = activity;
-            db.query(
+            database.query(
                 'UPDATE activities SET activityName = ?, activityType = ?, activitySubject = ?, activityDeadline = ?, activityCreated = ?, activityCreator = ?, activityStatus = ?, activityDescription = ? WHERE id = ?',
                 [activityName, activityType, activitySubject, activityDeadline, activityCreated, activityCreator, activityStatus, activityDescription, id],
                 (err, results) => {
@@ -153,7 +150,7 @@ const user = {
 
     deleteActivity: async (id) => {
         return new Promise ((resolve, reject) => {
-            db.query(
+            database.query(
                 'DELETE FROM activities WHERE id = ?',
                 [id],
                 (err, results) => {
@@ -166,7 +163,7 @@ const user = {
 
     getRequestsByStatus: async (status) => {
         return new Promise ((resolve, reject) => {
-            db.query(
+            database.query(
                 'SELECT * FROM requests WHERE activityStatus = ?',
                 [status],
                 (err, results) => {
@@ -180,7 +177,7 @@ const user = {
     updateRequestStatus: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {status} = value;
-            db.query(
+            database.query(
                 'UPDATE requests SET activityStatus = ? WHERE id = ?',
                 [status, id],
                 (err, results) => {
@@ -193,4 +190,4 @@ const user = {
 
 }
 
-module.exports = user;
+export default user;
