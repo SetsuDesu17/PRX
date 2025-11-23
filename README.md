@@ -1,13 +1,5 @@
 # PRX
-# DO NOT MERGE A PULL REQUEST
 
 ITECC - 05 Group Project
 
-Ready for Testing:
-- userModel
-- requestModel
-- requestController
-- activitiesController
-
-Ongoing:
-
+Project Status: Up and Running; Ready for Bug Tests or Improvements
