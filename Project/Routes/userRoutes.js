@@ -3,7 +3,7 @@ const router = Router();
 import userController from '../controllers/userController.js';
 
 // Working
-router.get('/', userController.getCurrentUser)
+router.get('/', userController.getCurrentUser);
 
 // Working
 router.post('/signIn', userController.signIn);

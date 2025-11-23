@@ -78,6 +78,18 @@ const user = {
         }); 
     },
 
+    checkIfCurrentUserIsSuperAdmin: async () => {
+        return new Promise ((resolve, reject) =>{
+            database.query(
+                "SELECT * FROM users WHERE userStatus = 'Online' AND userPrivilege = 'SuperAdmin'",
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
+    },
+
     updateUsername: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {username} = value;

@@ -36,9 +36,15 @@ const userController = {
     try {
       const { username, password } = req.body;
       await User.logOut();
-      await User.updateOnlineStatus(username, password);
+      const updateUserStatus = await User.updateOnlineStatus(username, password);
+      if (!updateUserStatus){
+        res.status(500)({ success: false, message: "Error Logging-in", error: error.message });
+      }
       const user = await User.logIn(username, password);
-      res.json({ success: true, data: user });
+      if (user){
+        res.json({ success: true, data: user });
+      }
+      
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error Logging-in', error: error.message });
     }
@@ -194,6 +200,14 @@ const userController = {
         return res.status(404).json({
           success: false,
           message: 'User not found'
+        });
+      }
+
+      const checkIfCurrentUserIsSuperAdmin = await User.checkIfCurrentUserIsSuperAdmin();
+      if (!checkIfCurrentUserIsSuperAdmin) {
+        return res.status(404).json({
+          success: false,
+          message: 'Current User Lacks the Valid Privilege'
         });
       }
 
