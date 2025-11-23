@@ -2,30 +2,34 @@ import { Router } from 'express';
 const router = Router();
 import userController from '../controllers/userController.js';
 
+// Working
 router.get('/', userController.getCurrentUser)
 
-//create new sign in
-router.post('/signIn', userController.createSignin);
+// Working
+router.post('/signIn', userController.signIn);
 
-//get log in
-router.get('/logIn/:username/:password', userController.logIn);
+// Working
+router.get('/logIn', userController.logIn);
 
-//get  by id
+// Working
+router.get('/logOut', userController.logOut);
+
+// Working
 router.get('/:id', userController.getUserById);
 
-//update name
+// Working
 router.put('/changeUsername/:id', userController.updateUsername);
 
-//update password
+// Working
 router.put('/changePassword/:id', userController.updatePassword);
 
-//delete account
+// Working
 router.delete('/deleteAccount/:id', userController.deleteAccount);
 
-//update privilege
-router.put('/superadmin/changePrivillege/:id', userController.updatePrivilege);
+// Working
+router.put('/superadmin/changePrivilege/:id', userController.updatePrivilege);
 
-//create activity
+// create activity
 router.post('/admin/activities/add', userController.createActivity);
 
 //update activity

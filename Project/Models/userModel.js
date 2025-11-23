@@ -3,13 +3,13 @@ import database from '../database.js';
 const user = {
     signIn: async (userData) => {
         return new Promise ((resolve, reject) => {
-            const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn} = userData;
+            const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel} = userData;
             database.query(
-                'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, 'FALSE'],
+                'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)',
+                [username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel],
                 (err, results) => {
                     if (err) reject(err);
-                    resolve({ id: results.insertId, ...userData});
+                    resolve({results});
                 }
             );
         });
@@ -18,7 +18,7 @@ const user = {
     updateOnlineStatus: async (username, password) => {
         return new Promise ((resolve, reject) => {
             database.query(
-                'UPDATE users SET userIsLoggedIn = 1 WHERE username = ? AND password = ?',
+                'UPDATE users SET userIsLoggedIn = 1, userStatus = "Online" WHERE username = ? AND password = ?',
                 [username, password],
                 (err, results) => {
                     if (err) reject(err);
@@ -33,6 +33,18 @@ const user = {
             database.query(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
                 [username, password],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    },
+
+    logOut: async () => {
+        return new Promise ((resolve, reject) => {
+            database.query(
+                'UPDATE users SET userIsLoggedIn = 0, userStatus = "Offline" WHERE userIsLoggedIn = 1',
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -66,9 +78,10 @@ const user = {
         }); 
     },
 
-    changeUsername: async (id, value) => {
+    updateUsername: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {username} = value;
+            console.log(username);
             database.query(
                 'UPDATE users SET username = ? WHERE id = ?',
                 [username, id],
@@ -80,7 +93,7 @@ const user = {
         });
     },
 
-    changePassword: async (id, value) => {
+    updatePassword: async (id, value) => {
         return new Promise ((resolve, reject) => {
             const {password} = value;
             database.query(
@@ -94,7 +107,7 @@ const user = {
         });
     },
 
-    changePrivilege: async (id, userPrivilege) => {
+    updatePrivilege: async (id, userPrivilege) => {
         return new Promise ((resolve, reject) => {
             database.query(
                 'UPDATE users SET userPrivilege = ? WHERE id = ?',
