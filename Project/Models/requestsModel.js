@@ -56,7 +56,7 @@ const requests = {
         return new Promise ((resolve, reject) => {
             const {requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = request;
             database.query(
-                'INSERT INTO requests (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO requests (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ],
                 (err, results) => {
                     if (err) reject(err);

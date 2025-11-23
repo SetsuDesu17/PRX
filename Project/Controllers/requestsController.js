@@ -41,14 +41,9 @@ const requestsController = {
 
   createRequest: async (req, res) => {
     try {
-      const { requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = req.body;
-      if (!requestHeader || !activityName || !activityType || !requestPublisher || !requestStatus) {
-        return res.status(400).json({ success: false, message: 'Required fields missing' });
-      }
-      const newRequest = await Request.createRequest({
-        requestHeader, activityName, activityType, activitySubject, activityDeadline,
-        activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus
-      });
+      //const { requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = req.body;
+      
+      const newRequest = await Request.createRequest(req.body);
       res.status(201).json({ success: true, message: 'Request created successfully', data: newRequest });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error creating request', error: error.message });
