@@ -4,7 +4,7 @@ import Request from '../models/requestsModel.js';
 
 const userController = {
     //Signin = Username, Password
-    createSignin: async (req, res) => {
+    signIn: async (req, res) => {
     try {
       const { username, password } = req.body;
 
@@ -16,10 +16,7 @@ const userController = {
         });
       }
 
-      const newSignin = await User.create({
-        username,
-        password
-      });
+      const newSignin = await User.signIn(req.body);
 
       res.status(201).json({
         success: true,
@@ -35,16 +32,24 @@ const userController = {
     }
   },
 
-  //Login = Username, Password (need fixing)
   logIn: async (req, res) => {
     try {
-      const username = req.params.username;
-      const password = req.params.password;
+      const { username, password } = req.body;
+      await User.logOut();
       await User.updateOnlineStatus(username, password);
       const user = await User.logIn(username, password);
       res.json({ success: true, data: user });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error Logging-in', error: error.message });
+    }
+  },
+
+  logOut: async (req, res) => {
+    try {
+      const user = await User.logOut();
+      res.json({ success: true, data: user });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error Logging-Out', error: error.message });
     }
   },
 
@@ -75,7 +80,7 @@ const userController = {
       const userId = req.params.id;
 
       // Check if student exists
-      const existingUser = await User.getById(userId);
+      const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
           success: false,
@@ -91,7 +96,7 @@ const userController = {
         });
       }
 
-      await User.update(userId, {
+      await User.updateUsername(userId, {
         username
       });
 
@@ -115,7 +120,7 @@ const userController = {
       const userId = req.params.id;
 
       // Check if student exists
-      const existingUser = await User.getById(userId);
+      const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
           success: false,
@@ -131,7 +136,7 @@ const userController = {
         });
       }
 
-      await User.update(userId, {
+      await User.updatePassword(userId, {
         password
       });
 
@@ -154,7 +159,7 @@ const userController = {
       const userId = req.params.id;
 
       // Check if student exists
-      const existingUser = await User.getById(userId);
+      const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
           success: false,
@@ -162,7 +167,7 @@ const userController = {
         });
       }
 
-      await User.delete(userId);
+      await User.deleteAccount(userId);
 
       res.json({
         success: true,
@@ -184,7 +189,7 @@ const userController = {
       const userId = req.params.id;
 
       // Check if account exists
-      const existingUser = await User.getById(userId);
+      const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
           success: false,
@@ -200,9 +205,7 @@ const userController = {
         });
       }
 
-      await User.update(userId, {
-        userPrivilege
-      });
+      await User.updatePrivilege(userId, userPrivilege);
 
       res.json({
         success: true,
