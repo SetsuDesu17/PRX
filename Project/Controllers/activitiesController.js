@@ -63,7 +63,7 @@ const activitiesController = {
       if (!activityName || !activityType || !activityDeadline || !activityPublisher || !activityStatus) {
         return res.status(400).json({ success: false, message: 'Required fields missing' });
       }
-      const newActivity = await Activity.create({
+      const newActivity = await Activity.createActivity({
         activityName, activityType, activitySubject, activityDeadline, activityPublished,
         activityPublisher, activityStatus, activityDescription
       });

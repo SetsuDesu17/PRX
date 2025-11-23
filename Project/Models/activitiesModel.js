@@ -59,6 +59,19 @@ const activities = {
                 }
             );
         });
+    },
+    createActivity: async (request) => {
+        return new Promise ((resolve, reject) => {
+            const {activityName, activityType, activitySubject, activityDeadline, activityDescription } = request;
+            database.query(
+                'INSERT INTO activities (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [activityName, activityType, activitySubject, activityDeadline, activityDescription],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            )
+        });
     }
 }
 
