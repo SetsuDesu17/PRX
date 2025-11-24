@@ -10,9 +10,9 @@ const activitiesController = {
     }
   },
 
-  getActivityById: async (req, res) => {
+  getActivitiesById: async (req, res) => {
     try {
-      const activity = await Activity.getById(req.params.id);
+      const activity = await Activity.getActivitiesById(req.params.id);
       if (!activity) return res.status(404).json({ success: false, message: 'Activity not found' });
       res.json({ success: true, data: activity });
     } catch (error) {
@@ -22,13 +22,24 @@ const activitiesController = {
 
   getActivitiesByDeadline: async (req, res) => {
     try {
-      const activity = await Activity.getActivitiesByDeadline(req.params.id);
-      if (!activity) return res.status(404).json({ success: false, message: 'Activity not found' });
-      res.json({ success: true, data: activity });
+      const { sort } = req.body;
+      if (!sort){
+        return res.status(400).json({
+          success: false,
+          message: 'Current Field (sort){olderThan/earlierThan} is Required'
+        });
+      } else if (sort != "olderThan" && sort != "earlierThan"){
+        return res.status(400).json({
+          success: false,
+          message: 'sort Must be Either: "olderThan" or "earlierThan"'
+        });
+      }
+      const requests = await Activity.getActivitiesByDeadline(req.params.date, sort);
+      res.json({ success: true, data: requests });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Error fetching activity', error: error.message });
+      res.status(500).json({ success: false, message: 'Error fetching activities by date', error: error.message });
     }
-  },
+  },  
 
   getActivitiesByStatus: async (req, res) => {
     try {
@@ -50,26 +61,10 @@ const activitiesController = {
 
   getActivitiesByType: async (req, res) => {
     try {
-      const activities = await Activity.getActivitiesByType(req.params.status);
+      const activities = await Activity.getActivitiesByType(req.params.type);
       res.json({ success: true, data: activities });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error fetching activities by status', error: error.message });
-    }
-  },
-
-  createActivity: async (req, res) => {
-    try {
-      const { activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription } = req.body;
-      if (!activityName || !activityType || !activityDeadline || !activityPublisher || !activityStatus) {
-        return res.status(400).json({ success: false, message: 'Required fields missing' });
-      }
-      const newActivity = await Activity.createActivity({
-        activityName, activityType, activitySubject, activityDeadline, activityPublished,
-        activityPublisher, activityStatus, activityDescription
-      });
-      res.status(201).json({ success: true, message: 'Activity created successfully', data: newActivity });
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Error creating activity', error: error.message });
     }
   },
 

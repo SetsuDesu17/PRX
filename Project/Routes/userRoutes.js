@@ -1,6 +1,7 @@
 import { Router } from 'express';
 const router = Router();
-import userController from '../controllers/userController.js';
+import userController from '../Controllers/userController.js';
+import requestsController from '../controllers/requestsController.js';
 
 // Working
 router.get('/', userController.getCurrentUser);
@@ -29,19 +30,19 @@ router.delete('/deleteAccount/:id', userController.deleteAccount);
 // Working
 router.put('/superadmin/changePrivilege/:id', userController.updatePrivilege);
 
-// create activity
+// Working
 router.post('/admin/activities/add', userController.createActivity);
 
-//update activity
+// Working
 router.put('/admin/activities/update/:id', userController.updateActivity);
 
-//delete activity
-router.delete('/admin/activites/delete/:id', userController.deleteActivity);
+// Working
+router.delete('/admin/activities/delete/:id', userController.deleteActivity);
 
-//get request by status
-router.get('/admin/requests/status/:id', userController.getRequestsByStatus);
+// Working
+router.get('/admin/requests/status/:status', requestsController.getRequestsByStatus);
 
-//update request status
-router.put('/admin/requests/status/:id/update/:status', userController.updateRequestStatus);
+// Working
+router.put('/admin/requests/status/update/:id', userController.updateRequestStatus);
 
 export default router;

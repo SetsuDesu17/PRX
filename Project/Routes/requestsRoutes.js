@@ -2,19 +2,19 @@ import { Router } from 'express';
 const router = Router();
 import requestsController from '../controllers/requestsController.js';
 
-// GET / - Get requests -- THIS IS WORKING!!!!
+// Working
 router.get('/', requestsController.getAllRequests);
 
-// GET /status/:status - Get requests by status -- !this is not working
+// Working
 router.get('/status/:status', requestsController.getRequestsByStatus);
 
-// GET /id/:id - Get requests by ID -- Positive
-router.get('/id/:id', requestsController.getRequestsById);
+// Working
+router.get('/:id', requestsController.getRequestsById);
 
-// GET /date_publish/:date/:olderOrLater - Get requests by date published -- untested
-router.get('/date_publish/:date', requestsController.getRequestsByDate);
+// Working
+router.get('/datePublished/:date', requestsController.getRequestsByDate);
 
-// POST /create - Create a request -- mmmyeh, working
+// Working
 router.post('/create', requestsController.createRequest);
 
 export default router;
