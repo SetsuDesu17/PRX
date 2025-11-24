@@ -1,5 +1,4 @@
 # PRX
 
-ITECC - 05 Group Project
+ITECC - 05 Group Project - Activity Board System
 
-Project Status: Up and Running; Ready for Bug Tests or Improvements
