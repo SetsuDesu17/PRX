@@ -4,7 +4,7 @@ const connection = createConnection({
   host: 'localhost',
   user: 'root', 
   password: '', 
-  database: 'db_reminder'
+  database: 'db_activityboardsystem'
 });
 
 connection.connect((err) => {

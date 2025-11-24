@@ -1,4 +1,4 @@
-import User from '../models/userModel.js';
+import User from '../Models/userModel.js';
 import Activities from '../models/activitiesModel.js';
 import Request from '../models/requestsModel.js';
 
@@ -84,8 +84,8 @@ const userController = {
     try {
       const { username } = req.body;
       const userId = req.params.id;
-
-      // Check if student exists
+      
+      // Check if the user exists
       const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
@@ -93,7 +93,7 @@ const userController = {
           message: 'User not found'
         });
       }
-
+      
       // Validation
       if (!username) {
         return res.status(400).json({
@@ -125,7 +125,7 @@ const userController = {
       const { password } = req.body;
       const userId = req.params.id;
 
-      // Check if student exists
+      // Check if the user exists
       const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
@@ -194,7 +194,7 @@ const userController = {
       const { userPrivilege } = req.body;
       const userId = req.params.id;
 
-      // Check if account exists
+  
       const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
@@ -205,7 +205,7 @@ const userController = {
 
       const checkIfCurrentUserIsSuperAdmin = await User.checkIfCurrentUserIsSuperAdmin();
       if (!checkIfCurrentUserIsSuperAdmin) {
-        return res.status(404).json({
+        return res.status(400).json({
           success: false,
           message: 'Current User Lacks the Valid Privilege'
         });
@@ -237,18 +237,18 @@ const userController = {
   //addActivity
   createActivity: async (req, res) => {
     try {
-      const { id, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription } = req.body;
-
+      const {activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription } = req.body;
+      
+      
       // Validation
-      if (!id || !activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
+      if (!activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
         return res.status(400).json({
           success: false,
-          message: 'All fields (id, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
+          message: 'All fields (activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
         });
       }
 
-      const newActivity = await Activities.create({
-        id, 
+      const newActivity = await User.addActivity({
         activityName, 
         activityType, 
         activitySubject, 
@@ -261,7 +261,7 @@ const userController = {
 
       res.status(201).json({
         success: true,
-        message: 'Actiity Created successfully',
+        message: 'Activity Created successfully',
         data: newActivity
       });
     } catch (error) {
@@ -276,11 +276,12 @@ const userController = {
   //updateActivity
   updateActivity: async (req, res) => {
     try {
-      const { id, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescriptionassword } = req.body;
+      const {activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription} = req.body;
       const activityId = req.params.id;
 
+      
       // Check if student exists
-      const existingActivity = await Activities.getById(activityId);
+      const existingActivity = await Activities.getActivitiesById(activityId);
       if (!existingActivity) {
         return res.status(404).json({
           success: false,
@@ -289,15 +290,14 @@ const userController = {
       }
 
       // Validation
-      if (!id || !activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
+      if ( !activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
         return res.status(400).json({
           success: false,
           message: 'All fields (id, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
         });
       }
 
-      await User.update(userId, {
-        id, 
+      await User.updateActivity(activityId, {
         activityName, 
         activityType, 
         activitySubject, 
@@ -326,8 +326,7 @@ const userController = {
     try {
       const activityId = req.params.id;
 
-      // Check if student exists
-      const existingUser = await Activities.getById(activityId);
+      const existingUser = await Activities.getActivitiesById(activityId);
       if (!existingUser) {
         return res.status(404).json({
           success: false,
@@ -335,7 +334,7 @@ const userController = {
         });
       }
 
-      await User.delete(userId);
+      await User.deleteActivity(activityId);
 
       res.json({
         success: true,
@@ -350,33 +349,14 @@ const userController = {
     }
   },
 
-  //getRequestsByStatus
-  getRequestsByStatus: async (req, res) => {
-    try {
-      const { status } = req.params;
-      const requestId = await Request.getByStatus(status);
-      
-      res.json({
-        success: true,
-        data: requestId
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Error fetching Request by status',
-        error: error.message
-      });
-    }
-  },
-
   //updateRequestStatus
   updateRequestStatus: async (req, res) => {
     try {
       const { requestStatus } = req.body;
       const requestId = req.params.id;
 
-      // Check if student exists
-      const existingRequest = await Request.getById(requestId);
+      // Check if the request exists
+      const existingRequest = await Request.getRequestsById(requestId);
       if (!existingRequest) {
         return res.status(404).json({
           success: false,
@@ -385,16 +365,14 @@ const userController = {
       }
 
       // Validation
-      if (!requestId) {
+      if (!requestStatus) {
         return res.status(400).json({
           success: false,
           message: 'Current field (requestStatus) is required'
         });
-      }
+      } 
 
-      await Request.update(requestId, {
-        requestStatus
-      });
+      await User.updateRequestStatus(requestId, requestStatus);
 
       res.json({
         success: true,

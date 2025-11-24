@@ -22,6 +22,7 @@ const requestsController = {
 
   getRequestsByStatus: async (req, res) => {
     try {
+      
       const requests = await Request.getRequestsByStatus(req.params.status);
       res.json({ success: true, data: requests });
     } catch (error) {
@@ -31,7 +32,19 @@ const requestsController = {
 
   getRequestsByDate: async (req, res) => {
     try {
-      const requests = await Request.getRequestsByDate(req.params.status);
+      const { sort } = req.body;
+      if (!sort){
+        return res.status(400).json({
+          success: false,
+          message: 'Current Field (sort){olderThan/earlierThan} is Required'
+        });
+      } else if (sort != "olderThan" && sort != "earlierThan"){
+        return res.status(400).json({
+          success: false,
+          message: 'sort Must be Either: "olderThan" or "earlierThan"'
+        });
+      }
+      const requests = await Request.getRequestsByDate(req.params.date, sort);
       res.json({ success: true, data: requests });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error fetching requests by date', error: error.message });

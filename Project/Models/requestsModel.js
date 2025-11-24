@@ -39,10 +39,16 @@ const requests = {
         });
     },
 
-    getRequestsByDate: async (date) => {
+    getRequestsByDate: async (date, sort) => {
         return new Promise((resolve, reject) => {
+            let sortValue = "";
+            if (sort == "olderThan"){
+                sortValue = ">";
+            } else if (sort == "earlierThan"){
+                sortValue = "<";
+            }
             database.query(
-                "SELECT * FROM requests WHERE requestPublished <= ?",
+                `SELECT * FROM requests WHERE requestPublished ${sortValue}= ?`,
                 [date],
                 (err, results) => {
                     if (err) reject(err);

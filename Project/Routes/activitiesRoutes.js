@@ -2,19 +2,19 @@ import { Router } from 'express';
 const router = Router();
 import activitiesController from '../controllers/activitiesController.js';
 
-// GET / - Get all activities
+// Working
 router.get('/', activitiesController.getAllActivity);
 
-// GET //status/:status - Get activities by status
+// Working
 router.get('/status/:status', activitiesController.getActivitiesByStatus);
 
-// GET //date/:date - Get activites by deadline
+// Working
 router.get('/date/:date', activitiesController.getActivitiesByDeadline);
 
-// GET //type/:type - Get activities by type
+// Working
 router.get('/type/:type', activitiesController.getActivitiesByType);
 
-// GET //type/:subject - Get activities by subject
-router.get('/type/:subject', activitiesController.getActivitiesBySubject);
+// Working
+router.get('/subject/:subject', activitiesController.getActivitiesBySubject);
 
 export default router;

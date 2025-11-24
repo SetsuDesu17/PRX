@@ -12,6 +12,18 @@ const activities = {
             );
         });
     },
+    getActivitiesById: async (id) => {
+        return new Promise((resolve, reject) => {
+            database.query(
+                "SELECT * FROM activities WHERE id = ?",
+                [id],
+                (err, results) => {
+                    if (err) reject(err);
+                    resolve(results);
+                }
+            );
+        });
+    },
     getActivitiesByStatus: async (status) => {
         return new Promise((resolve, reject) => {
             database.query(
@@ -24,16 +36,22 @@ const activities = {
             );
         });
     },
-    getActivitiesByDeadline: async (date) => {
+    getActivitiesByDeadline: async (date, sort) => {
         return new Promise((resolve, reject) => {
+            let sortValue = "";
+            if (sort == "olderThan"){
+                sortValue = ">";
+            } else if (sort == "earlierThan"){
+                sortValue = "<";
+            }
             database.query(
-                "SELECT * FROM activities WHERE activityDeadline <= ?",
+                `SELECT * FROM activities WHERE activityDeadline ${sortValue}= ?`,
                 [date],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
                 }
-            );
+            )  
         });
     },
     getActivitiesByType: async (type) => {
@@ -60,19 +78,6 @@ const activities = {
             );
         });
     },
-    createActivity: async (request) => {
-        return new Promise ((resolve, reject) => {
-            const {activityName, activityType, activitySubject, activityDeadline, activityDescription } = request;
-            database.query(
-                'INSERT INTO activities (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [activityName, activityType, activitySubject, activityDeadline, activityDescription],
-                (err, results) => {
-                    if (err) reject(err);
-                    resolve(results);
-                }
-            )
-        });
-    }
 }
 
 export default activities;
