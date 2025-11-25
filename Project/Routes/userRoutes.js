@@ -9,6 +9,8 @@ router.get('/', userController.getCurrentUser);
 
 router.post('/signIn', userController.signIn);
 
+// Working
+router.get('/logIn', userController.logIn);
 
 router.get('/logIn', userController.logIn);
 
