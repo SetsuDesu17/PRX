@@ -165,7 +165,10 @@ const user = {
 
     createActivity: async (activity) => {
         return new Promise ((resolve, reject) => {
-            const {activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription} = activity;
+            let {requestPublished, requestPublisher, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription} = activity;
+            activityPublisher = requestPublisher;
+            activityPublished = requestPublished;
+            activityStatus = "Active";
             database.query(
                 'INSERT INTO activities (activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                 [activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription],
