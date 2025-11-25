@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 23, 2025 at 02:40 PM
+-- Generation Time: Nov 25, 2025 at 01:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `db_reminder`
+-- Database: `db_activityboardsystem`
 --
 
 -- --------------------------------------------------------
@@ -33,11 +33,18 @@ CREATE TABLE `activities` (
   `activityType` varchar(255) NOT NULL,
   `activitySubject` varchar(255) DEFAULT NULL,
   `activityDeadline` date NOT NULL,
-  `activityCreated` date NOT NULL,
-  `activityCreator` varchar(255) NOT NULL,
+  `activityPublished` date NOT NULL,
+  `activityPublisher` varchar(255) NOT NULL,
   `activityStatus` varchar(255) NOT NULL,
   `activityDescription` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `activities`
+--
+
+INSERT INTO `activities` (`id`, `activityName`, `activityType`, `activitySubject`, `activityDeadline`, `activityPublished`, `activityPublisher`, `activityStatus`, `activityDescription`) VALUES
+(1, 'Buizel', 'Water', 'Pokemon', '0000-00-00', '2010-10-10', 'Waffles', 'Testing', 'This is for testing');
 
 -- --------------------------------------------------------
 
@@ -82,8 +89,15 @@ CREATE TABLE `users` (
   `userClass` varchar(255) NOT NULL,
   `userSection` varchar(255) NOT NULL,
   `userYearLevel` int(255) NOT NULL,
-  `userIsLoggedIn` tinyint(1) NOT NULL DEFAULT 0
+  `userIsLoggedIn` varchar(255) NOT NULL DEFAULT 'FALSE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `userPrivilege`, `userStatus`, `userClass`, `userSection`, `userYearLevel`, `userIsLoggedIn`) VALUES
+(1, 'Waffles', 'Pancakes', 'SuperAdmin', 'Online', 'BSITITITganunganun', 'ABCD', 1, 'TRUE');
 
 --
 -- Indexes for dumped tables
@@ -115,7 +129,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `requests`
@@ -127,7 +141,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

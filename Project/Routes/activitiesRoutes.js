@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 import activitiesController from '../controllers/activitiesController.js';
-import { act } from 'react';
+//import { act } from 'react';
 
 // Working
 router.get('/', activitiesController.getAllActivity);
