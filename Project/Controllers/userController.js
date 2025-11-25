@@ -91,6 +91,14 @@ const userController = {
     try {
       const { username, password, newUsername } = req.body;
       // Validation
+      const user = await User.getUserByUsernameAndPassword(username, password);
+      console.log(user);
+      if (!user[0]){
+        return res.status(404).json({
+        success: false,
+        message: 'Error updating Password, Invalid Username and Password'
+        });
+      }
       if (!username) {
         return res.status(400).json({
           success: false,
@@ -127,7 +135,14 @@ const userController = {
   changePassword: async (req, res) => {
     try {
       const { username, password, newPassword } = req.body;
-      
+      const user = await User.getUserByUsernameAndPassword(username, password);
+      console.log(user);
+      if (!user[0]){
+        return res.status(404).json({
+        success: false,
+        message: 'Error updating Password, Invalid Username and Password'
+        });
+      }
       // Validation
       if (!username) {
         return res.status(400).json({
@@ -146,8 +161,14 @@ const userController = {
         });
       }
 
-      await User.updatePassword(username, password, newPassword);
-
+      const pass = await User.updatePassword(username, password, newPassword);
+      if (!pass){
+        res.status(404).json({
+        success: false,
+        message: 'Error updating Password',
+        error: error.message
+      });
+      }
       res.json({
         success: true,
         message: 'Password updated successfully'
