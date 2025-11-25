@@ -35,7 +35,7 @@ const userController = {
   logIn: async (req, res) => {
     try {
       const { username, password } = req.body;
-      await User.logOut();
+      await User.updateOfflineStatus();
       const updateUserStatus = await User.updateOnlineStatus(username, password);
       if (!updateUserStatus){
         res.status(400)({ success: false, message: "Error Logging-in", error: error.message });
