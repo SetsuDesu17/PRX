@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import userController from '../Controllers/userController.js';
+import userController from '../controllers/userController.js';
 import requestsController from '../controllers/requestsController.js';
 
 // Working
@@ -10,7 +10,7 @@ router.get('/', userController.getCurrentUser);
 router.post('/signIn', userController.signIn);
 
 // Working
-router.post('/logIn', userController.logIn);
+router.get('/logIn', userController.logIn);
 
 // Working
 router.get('/logOut', userController.logOut);

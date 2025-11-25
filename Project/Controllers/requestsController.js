@@ -54,8 +54,14 @@ const requestsController = {
 
   createRequest: async (req, res) => {
     try {
-      //const { requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = req.body;
-      
+      const { requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublisher, requestDescription, requestStatus } = req.body;
+      // Validation
+      if ( !requestHeader || !activityName || !activityType || !activitySubject || !activityDeadline || !activityDescription || !requestPublisher || !requestDescription || !requestStatus) {
+        return res.status(400).json({
+          success: false,
+          message: 'All fields (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublisher, requestDescription, requestStatus) are required'
+        });
+      }
       const newRequest = await Request.createRequest(req.body);
       res.status(201).json({ success: true, message: 'Request created successfully', data: newRequest });
     } catch (error) {

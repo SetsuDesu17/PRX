@@ -4,7 +4,7 @@ const requests = {
     getAllRequests: async () => {
         return new Promise((resolve, reject) => {
             database.query(
-                "SELECT * FROM requests",
+                'SELECT * FROM requests WHERE requestStatus = "Active" ORDER BY requestPublished ASC',
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -60,7 +60,8 @@ const requests = {
 
     createRequest: async (request) => {
         return new Promise ((resolve, reject) => {
-            const {requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus } = request;
+            const {requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublisher, requestDescription, requestStatus } = request;
+            const requestPublished = new Date().toISOString();
             database.query(
                 'INSERT INTO requests (requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [requestHeader, activityName, activityType, activitySubject, activityDeadline, activityDescription, requestPublished, requestPublisher, requestDescription, requestStatus ],

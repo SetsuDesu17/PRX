@@ -7,10 +7,10 @@ function isEmptyArray(array) {
 const user = {
     createUser: async (userData) => {
         return new Promise ((resolve, reject) => {
-            const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel} = userData;
+            const { username, password, userClass, userSection, userYearLevel} = userData;
             database.query(
-                'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)',
-                [username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel],
+                'INSERT INTO users (username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel, userIsLoggedIn) VALUES (?, ?, "Member", "Offline", ?, ?, ?, FALSE)',
+                [username, password, userClass, userSection, userYearLevel],
                 (err, results) => {
                     if (err) reject(err);
                     resolve({results});
@@ -110,8 +110,6 @@ const user = {
 
     updateUsername: async (oldUsername, password, newUsername) => {
         return new Promise ((resolve, reject) => {
-            const {username} = value;
-            console.log(username);
             database.query(
                 'UPDATE users SET username = ? WHERE username = ? AND password = ?',
                 [newUsername, oldUsername, password],
@@ -125,7 +123,6 @@ const user = {
 
     updatePassword: async (username, oldPassword, newPassword) => {
         return new Promise ((resolve, reject) => {
-            const {password} = value;
             database.query(
                 'UPDATE users SET password = ? WHERE username = ? AND password = ?',
                 [newPassword, username, oldPassword],
@@ -165,9 +162,11 @@ const user = {
 
     createActivity: async (activity) => {
         return new Promise ((resolve, reject) => {
-            let {requestPublished, requestPublisher, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription} = activity;
-            activityPublisher = requestPublisher;
-            activityPublished = requestPublished;
+            let { requestPublisher, activityName, activityType, activitySubject, activityDeadline, activityPublisher, activityStatus, activityDescription} = activity;
+            if (!requestPublisher == false){
+                activityPublisher = requestPublisher;
+            }
+            const activityPublished = new Date().toISOString();;
             activityStatus = "Active";
             database.query(
                 'INSERT INTO activities (activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',

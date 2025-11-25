@@ -4,7 +4,7 @@ const activities = {
     getAllActivity: async () => {
         return new Promise((resolve, reject) => {
             database.query(
-                "SELECT * FROM activities",
+                "SELECT * FROM activities ORDER BY activityDeadline DESC",
                 (err, result) => {
                     if (err) reject(err);
                     resolve(result);
