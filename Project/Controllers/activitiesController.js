@@ -43,6 +43,7 @@ const activitiesController = {
 
   getActivitiesByStatus: async (req, res) => {
     try {
+      
       const activities = await Activity.getActivitiesByStatus(req.params.status);
       res.json({ success: true, data: activities });
     } catch (error) {
@@ -52,10 +53,10 @@ const activitiesController = {
 
   getActivitiesBySubject: async (req, res) => {
     try {
-      const activities = await Activity.getActivitiesBySubject(req.params.status);
+      const activities = await Activity.getActivitiesBySubject(req.params.subject);
       res.json({ success: true, data: activities });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Error fetching activities by status', error: error.message });
+      res.status(500).json({ success: false, message: 'Error fetching activities by subject', error: error.message });
     }
   },
 
