@@ -1,7 +1,11 @@
 import database from '../database.js';
 
+function isEmptyArray(array) {
+        return Array.isArray(array) && array.length === 0;
+}
+
 const user = {
-    signIn: async (userData) => {
+    createUser: async (userData) => {
         return new Promise ((resolve, reject) => {
             const { username, password, userPrivilege, userStatus, userClass, userSection, userYearLevel} = userData;
             database.query(
@@ -28,7 +32,7 @@ const user = {
         });
     },
 
-    logIn: async (username, password) => {
+    getUserByUsernameAndPassword: async (username, password) => {
         return new Promise ((resolve, reject) => {
             database.query(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
@@ -41,10 +45,10 @@ const user = {
         });
     },
 
-    logOut: async () => {
+    updateOfflineStatus: async () => {
         return new Promise ((resolve, reject) => {
             database.query(
-                'UPDATE users SET userIsLoggedIn = "FALSE", userStatus = "Offline" WHERE userIsLoggedIn = 1',
+                'UPDATE users SET userIsLoggedIn = "FALSE", userStatus = "Offline" WHERE userIsLoggedIn = "TRUE"',
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -65,6 +69,32 @@ const user = {
         }); 
     },
 
+    checkIfCurrentUserIsSuperAdmin: async () => {
+        return new Promise ((resolve, reject) => {
+            database.query(
+                'SELECT userPrivilege FROM users WHERE userIsLoggedIn = "TRUE" AND userPrivilege = "SuperAdmin"',
+                (err, results) => {
+                    if(err) reject(err);
+                    if(!isEmptyArray(results)) resolve(results[0].userPrivilege);
+                    else reject ("err");
+                }
+            )
+        });
+    },
+
+    checkIfCurrentUserIsAdmin: async () => {
+        return new Promise ((resolve, reject) => {
+            database.query(
+                'SELECT userPrivilege FROM users WHERE userIsLoggedIn = "TRUE" AND userPrivilege IN ("SuperAdmin", "Admin")',
+                (err, results) => {
+                    if(err) reject(err);
+                    if(!isEmptyArray(results)) resolve(results[0].userPrivilege);
+                    else reject ("err");
+                }
+            )
+        });
+    },
+
     getUserById: async (id) => {
         return new Promise ((resolve, reject) => {
             database.query(
@@ -78,13 +108,13 @@ const user = {
         }); 
     },
 
-    updateUsername: async (id, value) => {
+    updateUsername: async (oldUsername, password, newUsername) => {
         return new Promise ((resolve, reject) => {
             const {username} = value;
             console.log(username);
             database.query(
-                'UPDATE users SET username = ? WHERE id = ?',
-                [username, id],
+                'UPDATE users SET username = ? WHERE username = ? AND password = ?',
+                [newUsername, oldUsername, password],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -93,12 +123,12 @@ const user = {
         });
     },
 
-    updatePassword: async (id, value) => {
+    updatePassword: async (username, oldPassword, newPassword) => {
         return new Promise ((resolve, reject) => {
             const {password} = value;
             database.query(
-                'UPDATE users SET password = ? WHERE id = ?',
-                [password, id],
+                'UPDATE users SET password = ? WHERE username = ? AND password = ?',
+                [newPassword, username, oldPassword],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -120,11 +150,11 @@ const user = {
         });
     },
 
-    deleteAccount: async (id) => {
+    deleteAccount: async (username, password) => {
         return new Promise ((resolve, reject) => {
             database.query(
-                'DELETE FROM users WHERE id = ?',
-                [id],
+                'DELETE FROM users WHERE username = ? AND password = ?',
+                [username, password],
                 (err, results) => {
                     if (err) reject(err);
                     resolve(results);
@@ -133,7 +163,7 @@ const user = {
         });
     },
 
-    addActivity: async (activity) => {
+    createActivity: async (activity) => {
         return new Promise ((resolve, reject) => {
             const {activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher, activityStatus, activityDescription} = activity;
             database.query(

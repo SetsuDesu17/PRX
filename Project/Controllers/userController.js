@@ -38,9 +38,9 @@ const userController = {
       await User.logOut();
       const updateUserStatus = await User.updateOnlineStatus(username, password);
       if (!updateUserStatus){
-        res.status(500)({ success: false, message: "Error Logging-in", error: error.message });
+        res.status(400)({ success: false, message: "Error Logging-in", error: error.message });
       }
-      const user = await User.logIn(username, password);
+      const user = await User.getUserByUsernameAndPassword(username, password);
       if (user){
         res.json({ success: true, data: user });
       }
@@ -80,19 +80,9 @@ const userController = {
   },
 
   //change username
-  updateUsername: async (req, res) => {
+  changeUsername: async (req, res) => {
     try {
-      const { username } = req.body;
-      const userId = req.params.id;
-      
-      // Check if the user exists
-      const existingUser = await User.getUserById(userId);
-      if (!existingUser) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
+      const { username, password, newUsername } = req.body;
       
       // Validation
       if (!username) {
@@ -100,11 +90,19 @@ const userController = {
           success: false,
           message: 'Current fields (Username) is required'
         });
+      } else if (!password) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current fields (Password) is required'
+        });
+      } else if (!newUsername) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current fields (New Username) is required'
+        });
       }
 
-      await User.updateUsername(userId, {
-        username
-      });
+      await User.updateUsername(username, password, newUsername);
 
       res.json({
         success: true,
@@ -120,31 +118,29 @@ const userController = {
   },
 
   //change password
-  updatePassword: async (req, res) => {
+  changePassword: async (req, res) => {
     try {
-      const { password } = req.body;
-      const userId = req.params.id;
-
-      // Check if the user exists
-      const existingUser = await User.getUserById(userId);
-      if (!existingUser) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
+      const { username, password, newPassword } = req.body;
+      
       // Validation
-      if (!password) {
+      if (!username) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current fields (Username) is required'
+        });
+      } else if (!password) {
         return res.status(400).json({
           success: false,
           message: 'Current fields (Password) is required'
         });
+      } else if (!newPassword) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current fields (New Password) is required'
+        });
       }
 
-      await User.updatePassword(userId, {
-        password
-      });
+      await User.updatePassword(username, password, newPassword);
 
       res.json({
         success: true,
@@ -162,18 +158,9 @@ const userController = {
   //Delete Account = login(Username, Password)
   deleteAccount: async (req, res) => {
     try {
-      const userId = req.params.id;
+      const {username, password} = req.body;
 
-      // Check if student exists
-      const existingUser = await User.getUserById(userId);
-      if (!existingUser) {
-        return res.status(404).json({
-          success: false,
-          message: 'Account not found'
-        });
-      }
-
-      await User.deleteAccount(userId);
+      await User.deleteAccount(username, password);
 
       res.json({
         success: true,
@@ -194,7 +181,12 @@ const userController = {
       const { userPrivilege } = req.body;
       const userId = req.params.id;
 
-  
+      if (!userPrivilege) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current fields (userPrivilege) is required'
+        });
+      }
       const existingUser = await User.getUserById(userId);
       if (!existingUser) {
         return res.status(404).json({
@@ -202,33 +194,19 @@ const userController = {
           message: 'User not found'
         });
       }
-
       const checkIfCurrentUserIsSuperAdmin = await User.checkIfCurrentUserIsSuperAdmin();
-      if (!checkIfCurrentUserIsSuperAdmin) {
-        return res.status(400).json({
-          success: false,
-          message: 'Current User Lacks the Valid Privilege'
+      if (checkIfCurrentUserIsSuperAdmin == "SuperAdmin") {
+        await User.updatePrivilege(userId, userPrivilege);
+        res.json({
+          success: true,
+          message: 'Privilege updated successfully'
         });
       }
-
-      // Validation
-      if (!userPrivilege) {
-        return res.status(400).json({
-          success: false,
-          message: 'Current fields (userPrivilege) is required'
-        });
-      }
-
-      await User.updatePrivilege(userId, userPrivilege);
-
-      res.json({
-        success: true,
-        message: 'Privilege updated successfully'
-      });
+ 
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error updating Privilege',
+        message: 'Current User Lacks Required Privilege',
         error: error.message
       });
     }
@@ -247,27 +225,30 @@ const userController = {
           message: 'All fields (activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
         });
       }
+      const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
+      if (checkIfCurrentUserIsAdmin == "SuperAdmin" || checkIfCurrentUserIsAdmin == "Admin") {
+          const newActivity = await User.createActivity({
+          activityName, 
+          activityType, 
+          activitySubject, 
+          activityDeadline, 
+          activityPublished, 
+          activityPublisher,  
+          activityStatus, 
+          activityDescription
+        });
 
-      const newActivity = await User.addActivity({
-        activityName, 
-        activityType, 
-        activitySubject, 
-        activityDeadline, 
-        activityPublished, 
-        activityPublisher,  
-        activityStatus, 
-        activityDescription
-      });
-
-      res.status(201).json({
-        success: true,
-        message: 'Activity Created successfully',
-        data: newActivity
-      });
+        res.status(201).json({
+          success: true,
+          message: 'Activity Created successfully',
+          data: newActivity
+        });
+      }
+      
     } catch (error) {
-      res.status(500).json({
+      res.status(400).json({
         success: false,
-        message: 'Error creating Activity',
+        message: 'Error creating Activity, Current User Lacks Required Privilege',
         error: error.message
       });
     }
@@ -297,25 +278,29 @@ const userController = {
         });
       }
 
-      await User.updateActivity(activityId, {
-        activityName, 
-        activityType, 
-        activitySubject, 
-        activityDeadline, 
-        activityPublished, 
-        activityPublisher,  
-        activityStatus, 
-        activityDescription
-      });
+      const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
+      if (checkIfCurrentUserIsAdmin == "SuperAdmin" || checkIfCurrentUserIsAdmin == "Admin") {
+        await User.updateActivity(activityId, {
+          activityName, 
+          activityType, 
+          activitySubject, 
+          activityDeadline, 
+          activityPublished, 
+          activityPublisher,  
+          activityStatus, 
+          activityDescription
+        });
 
-      res.json({
-        success: true,
-        message: 'Activity updated successfully'
-      });
+        res.json({
+          success: true,
+          message: 'Activity updated successfully'
+        });
+      }
+      
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error updating Activity',
+        message: 'Error updating Activity, Current User Lacks Required Privilege',
         error: error.message
       });
     }
@@ -333,17 +318,21 @@ const userController = {
           message: 'activity not found'
         });
       }
+      
+      const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
+      if (checkIfCurrentUserIsAdmin == "SuperAdmin" || checkIfCurrentUserIsAdmin == "Admin") {
+        await User.deleteActivity(activityId);
 
-      await User.deleteActivity(activityId);
-
-      res.json({
-        success: true,
-        message: 'Activity deleted successfully'
-      });
+        res.json({
+          success: true,
+          message: 'Activity deleted successfully'
+        });
+      }
+      
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error deleting Activity',
+        message: 'Error deleting Activity, Current User Lacks Required Privilege',
         error: error.message
       });
     }
@@ -371,17 +360,21 @@ const userController = {
           message: 'Current field (requestStatus) is required'
         });
       } 
+      
+      const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
+      if (checkIfCurrentUserIsAdmin == "SuperAdmin" || checkIfCurrentUserIsAdmin == "Admin") {
+        await User.updateRequestStatus(requestId, requestStatus);
 
-      await User.updateRequestStatus(requestId, requestStatus);
-
-      res.json({
-        success: true,
-        message: 'Request Status updated successfully'
-      });
+        res.json({
+          success: true,
+          message: 'Request Status updated successfully'
+        });
+      }
+      
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error updating Request Status',
+        message: 'Error updating Request Status, Current User Lacks Required Privilege',
         error: error.message
       });
     }
