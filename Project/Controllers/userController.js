@@ -364,7 +364,17 @@ const userController = {
       const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
       if (checkIfCurrentUserIsAdmin == "SuperAdmin" || checkIfCurrentUserIsAdmin == "Admin") {
         await User.updateRequestStatus(requestId, requestStatus);
-
+        if (requestStatus == "Approved"){
+          const request = await Request.getRequestsById(requestId);
+          const newActivity = await User.createActivity(request[0]);
+          if (!newActivity) {
+            res.status(500).json({
+            success: false,
+            message: 'Error Inserting Request into Activities',
+            error: error.message
+          });
+          }
+        }
         res.json({
           success: true,
           message: 'Request Status updated successfully'
