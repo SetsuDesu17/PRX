@@ -37,7 +37,7 @@ const activitiesController = {
       const requests = await Activity.getActivitiesByDeadline(req.params.date, sort);
       res.json({ success: true, data: requests });
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Error fetching requests by date', error: error.message });
+      res.status(500).json({ success: false, message: 'Error fetching activities by date', error: error.message });
     }
   },  
 
