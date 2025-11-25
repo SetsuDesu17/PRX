@@ -6,18 +6,18 @@ const userController = {
     //Signin = Username, Password
     signIn: async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const { username, password, userClass, userSection, userYearLevel } = req.body;
 
       // Validation
-      if (!username || !password) {
+      if (!username || !password || !userClass || !userSection || !userYearLevel) {
         return res.status(400).json({
           success: false,
-          message: 'All fields (username, password) are required'
+          message: 'All fields (username, password, userClass, userSection, userYearLevel) are required'
         });
       }
-
-      const newSignin = await User.signIn(req.body);
-
+      await User.updateOfflineStatus();
+      const newSignin = await User.createUser(req.body);
+      await User.updateOnlineStatus(username, password);
       res.status(201).json({
         success: true,
         message: 'Signed-in successfully',
@@ -35,15 +35,22 @@ const userController = {
   logIn: async (req, res) => {
     try {
       const { username, password } = req.body;
-      await User.updateOfflineStatus();
-      const updateUserStatus = await User.updateOnlineStatus(username, password);
-      if (!updateUserStatus){
-        res.status(400)({ success: false, message: "Error Logging-in", error: error.message });
+      if (!username || !password) {
+        res.status(404).json({
+          success: false,
+          message: 'Current fields (Password) is required'
+        });
       }
       const user = await User.getUserByUsernameAndPassword(username, password);
       if (user){
         res.json({ success: true, data: user });
       }
+      await User.updateOfflineStatus();
+      const updateUserStatus = await User.updateOnlineStatus(username, password);
+      if (!updateUserStatus){
+        res.status(400)({ success: false, message: "Error Logging-in", error: error.message });
+      }
+      
       
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error Logging-in', error: error.message });
@@ -52,7 +59,7 @@ const userController = {
 
   logOut: async (req, res) => {
     try {
-      const user = await User.logOut();
+      const user = await User.updateOfflineStatus();
       res.json({ success: true, data: user });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error Logging-Out', error: error.message });
@@ -83,7 +90,6 @@ const userController = {
   changeUsername: async (req, res) => {
     try {
       const { username, password, newUsername } = req.body;
-      
       // Validation
       if (!username) {
         return res.status(400).json({
@@ -215,14 +221,14 @@ const userController = {
   //addActivity
   createActivity: async (req, res) => {
     try {
-      const {activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription } = req.body;
+      const {activityName, activityType, activitySubject, activityDeadline, activityPublisher,  activityStatus, activityDescription } = req.body;
       
       
       // Validation
-      if (!activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
+      if (!activityName || !activityType || !activitySubject || !activityDeadline || !activityPublisher || !activityStatus || !activityDescription) {
         return res.status(400).json({
           success: false,
-          message: 'All fields (activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
+          message: 'All fields (activityName, activityType, activitySubject, activityDeadline, activityPublisher,  activityStatus, activityDescription) are required'
         });
       }
       const checkIfCurrentUserIsAdmin = await User.checkIfCurrentUserIsAdmin();
@@ -231,8 +237,7 @@ const userController = {
           activityName, 
           activityType, 
           activitySubject, 
-          activityDeadline, 
-          activityPublished, 
+          activityDeadline,  
           activityPublisher,  
           activityStatus, 
           activityDescription
@@ -271,10 +276,10 @@ const userController = {
       }
 
       // Validation
-      if ( !activityName || !activityType || !activitySubject || !activityDeadline || !activityPublished || !activityPublisher || !activityStatus || !activityDescription) {
+      if ( !activityName || !activityType || !activitySubject || !activityDeadline || !activityPublisher || !activityStatus || !activityDescription) {
         return res.status(400).json({
           success: false,
-          message: 'All fields (id, activityName, activityType, activitySubject, activityDeadline, activityPublished, activityPublisher,  activityStatus, activityDescription) are required'
+          message: 'All fields (id, activityName, activityType, activitySubject, activityDeadline, activityPublisher,  activityStatus, activityDescription) are required'
         });
       }
 
