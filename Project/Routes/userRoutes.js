@@ -10,7 +10,7 @@ router.get('/', userController.getCurrentUser);
 router.post('/signIn', userController.signIn);
 
 // Working
-router.get('/logIn', userController.logIn);
+router.post('/logIn', userController.logIn);
 
 // Working
 router.get('/logOut', userController.logOut);
@@ -19,19 +19,19 @@ router.get('/logOut', userController.logOut);
 router.get('/:id', userController.getUserById);
 
 // Working
-router.put('/changeUsername/:id', userController.updateUsername);
+router.put('/changeUsername', userController.changeUsername);
 
 // Working
-router.put('/changePassword/:id', userController.updatePassword);
+router.put('/changePassword', userController.changePassword);
 
 // Working
-router.delete('/deleteAccount/:id', userController.deleteAccount);
+router.delete('/deleteAccount', userController.deleteAccount);
 
 // Working
 router.put('/superadmin/changePrivilege/:id', userController.updatePrivilege);
 
 // Working
-router.post('/admin/activities/add', userController.createActivity);
+router.post('/admin/activities/create', userController.createActivity);
 
 // Working
 router.put('/admin/activities/update/:id', userController.updateActivity);
